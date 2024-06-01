@@ -39,7 +39,7 @@ public class Student extends Person {
 
     @Override
     public String toString() {
-        return super.toString() + String.format(" %s's ID is %s. %s height is %.2f centimeters, and %s weight is %.2f kg.",
+        return super.toString() + String.format(" %s's ID is %s. %s height is %.2f centimeters, and %s weight is %.2f kg.\n",
                 this.getName(), studentID, ("male".equalsIgnoreCase(this.getGender())) ? "His" : "Her", height,
                 ("male".equalsIgnoreCase(this.getGender())) ? "his" : "her", weight);
     }

@@ -1,8 +1,9 @@
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Scanner;
 
-public class StudentService {
+public class StudentService extends InputValidation {
     Scanner sc = new Scanner(System.in);
     List<Student> students;
 
@@ -16,59 +17,14 @@ public class StudentService {
     public void demoDtb() {
         students.add(new Student("Julia", 18, "female", "0999999999", "001", 165.5F, 47.6F));
         students.add(new Student("Benson", 20, "male", "0333333333", "002", 181.6F, 70.4F));
-        students.add(new Student("May", 16, "female", "0888888888", "003", 163.7F, 45.5F));
+        students.add(new Student("May", 19, "female", "0888888888", "003", 163.7F, 45.5F));
         students.add(new Student("Mel", 24, "male", "0987654321", "004", 175.4F, 51.2F));
         students.add(new Student("Crimson", 22, "male", "0946863105", "005", 177.8F, 62.7F));
         students.add(new Student("Julia", 21, "female", "0246813579", "006", 168.7F, 50.2F));
     }
 
     public void addNewStudent() {
-        System.out.print("Enter student name: ");
-        String name = sc.nextLine();
-
-        System.out.print("Enter student age: ");
-        int age = sc.nextInt();
-
-        System.out.print("Enter student gender: ");
-        String gender;
-        boolean validGender = false;
-        do {
-            gender = sc.nextLine();
-            if (gender.equals("male") || gender.equals("female")) {
-                validGender = true;
-                break;
-            }
-        } while (!validGender);
-
-        System.out.print("Enter student phone number: ");
-        String phoneNumber;
-        boolean validPhoneNumber;
-        do {
-            phoneNumber = sc.nextLine();
-            validPhoneNumber = phoneNumber.matches("0[389]\\d{8}");
-        } while (!validPhoneNumber);
-
-        System.out.print("Enter student ID: ");
-        String id;
-        boolean duplicateID = false;
-        do {
-            id = sc.nextLine();
-            for (Student student : students) {
-                if (student.getStudentID().equals(id)) {
-                    System.out.println("Already exists.");
-                    duplicateID = true;
-                    break;
-                }
-            }
-        } while (duplicateID);
-
-        System.out.print("Enter student height: ");
-        float height = sc.nextFloat();
-
-        System.out.print("Enter student weight: ");
-        float weight = sc.nextFloat();
-
-        students.add(new Student(name, age, gender, phoneNumber, id, height, weight));
+        students.add(new Student (inputName(), inputAge(), inputGender(), inputPhoneNumber(), inputID(students), inputHeight(), inputWeight()));
         System.out.println("Done.");
     }
 
@@ -80,7 +36,7 @@ public class StudentService {
         boolean found = false;
         List<Student> nameList = new ArrayList<>();
         for (Student student : students) {
-            if (student.getName().equals(name)) {
+            if (student.getName().equalsIgnoreCase(name)) {
                 nameList.add(student);
                 found = true;
             }
@@ -110,7 +66,7 @@ public class StudentService {
         boolean found = false;
         List<Student> genderList = new ArrayList<>();
         for (Student student : students) {
-            if (student.getGender().equals(gender)) {
+            if (student.getGender().equalsIgnoreCase(gender)) {
                 genderList.add(student);
                 found = true;
             }
@@ -140,7 +96,7 @@ public class StudentService {
         boolean found = false;
         Student idStudent = new Student();
         for (Student student : students) {
-            if (student.getStudentID().equals(id)) {
+            if (student.getStudentID().equalsIgnoreCase(id)) {
                 idStudent = student;
                 found = true;
                 break;
@@ -152,31 +108,34 @@ public class StudentService {
         return idStudent;
     }
 
-    public void getStudentsByHeight(float heightLow, float heightHigh) {
+    public List<Student> getStudentsByHeight(float heightLow, float heightHigh) {
         boolean found = false;
         List<Student> heightList = new ArrayList<>();
         for (Student student : students) {
             if (student.getHeight() >= heightLow && student.getHeight() <= heightHigh) {
-                System.out.println(student);
+                heightList.add(student);
                 found = true;
             }
         }
         if (!found) {
             System.out.println("Student not found.");
         }
+        return heightList;
     }
 
-    public void getStudentsByWeight(float weightLow, float weightHigh) {
+    public List<Student> getStudentsByWeight(float weightLow, float weightHigh) {
         boolean found = false;
+        List<Student> weightList = new ArrayList<>();
         for (Student student : students) {
             if (student.getWeight() >= weightLow && student.getWeight() <= weightHigh) {
-                System.out.println(student);
+                weightList.add(student);
                 found = true;
             }
         }
         if (!found) {
             System.out.println("Student not found.");
         }
+        return weightList;
     }
 
     public void deleteStudentByID(String id) {
@@ -199,18 +158,15 @@ public class StudentService {
         for (Student student : students) {
             if (student.getStudentID().equals(id)) {
                 System.out.print("What do you want to edit (name, age, gender, phone number, student ID, height, weight)? ");
-                String edited = sc.nextLine();
-                switch (edited) {
+                String choiceOfEdit = sc.nextLine();
+                sc.nextLine();
+                switch (choiceOfEdit) {
                     case "name":
-                        System.out.print("Enter new name: ");
-                        String name = sc.nextLine();
-                        student.setName(name);
+                        student.setName(inputName());
                         System.out.println("Done.");
                         break;
                     case "age":
-                        System.out.println("Enter new age: ");
-                        int age = sc.nextInt();
-                        student.setAge(age);
+                        student.setAge(inputAge());
                         System.out.println("Done.");
                         break;
                     case "gender":
@@ -222,27 +178,18 @@ public class StudentService {
                         System.out.println("Done.");
                         break;
                     case "phone number":
-                        System.out.print("Enter new phone number: ");
-                        String phoneNumber;
-                        boolean validPhoneNumber;
-                        do {
-                            phoneNumber = sc.nextLine();
-                            validPhoneNumber = phoneNumber.matches("0[389]\\d{8}");
-                        } while (!validPhoneNumber);
+                        student.setPhoneNumber(inputPhoneNumber());
+                        System.out.println("Done.");
                         break;
                     case "studentID":
                         System.out.println("Sorry, our system doesn't allow changing IDs.");
                         break;
                     case "height":
-                        System.out.print("Enter new height: ");
-                        float height = sc.nextFloat();
-                        student.setHeight(height);
+                        student.setHeight(inputHeight());
                         System.out.println("Done.");
                         break;
                     case "weight":
-                        System.out.print("Enter new weight: ");
-                        float weight = sc.nextFloat();
-                        student.setWeight(weight);
+                        student.setWeight(inputWeight());
                         System.out.println("Done.");
                         break;
                     default:
@@ -257,48 +204,200 @@ public class StudentService {
         }
     }
 
+    public Student getStudentByHeightRank(int heightRank) {
+        List<Float> heightList = new ArrayList<>();
+        Student findStudent = null;
+        for (Student student : students) {
+            heightList.add(student.getHeight());
+        }
+        heightList.sort(Collections.reverseOrder());
+        Float heightStudent = heightList.get(heightRank - 1);
+        for (Student student : students) {
+            if (student.getHeight() == heightStudent) {
+                findStudent = student;
+            }
+        }
+        return findStudent;
+    }
+
+    public Student getStudentByWeightRank(int weightRank) {
+        List<Float> weightList = new ArrayList<>();
+        Student findStudent = null;
+        for (Student student : students) {
+            weightList.add(student.getWeight());
+        }
+        weightList.sort(Collections.reverseOrder());
+        Float weightStudent = weightList.get(weightRank - 1);
+        for (Student student : students) {
+            if (student.getWeight() == weightStudent) {
+                findStudent = student;
+                break;
+            }
+        }
+        return findStudent;
+    }
+
+    public float getBMIByID(String id) {
+        float bmi = 0;
+        for (Student student : students) {
+            if (student.getStudentID().equalsIgnoreCase(id)) {
+                bmi = (float) (student.getWeight() / Math.pow((student.getHeight() / 100), 2));
+            }
+        }
+        return bmi;
+    }
+
     public void studentServices() {
         String id;
         System.out.println("What do you want to do today?");
-        System.out.println("1. Add new student.");
-        System.out.println("2. Get all students.");
-        System.out.println("3. Get students by name.");
-        System.out.println("3. Get student by ID.");
-        System.out.println("4. Delete student by ID.");
-        System.out.println("5. Edit student by ID.");
-        System.out.println("6. Exit");
-        String choice = sc.nextLine();
-        switch (choice) {
-            case "1":
+        System.out.println("1. Add a new student.");
+        System.out.println("2. Get student(s).");
+        System.out.println("3. Delete a student.");
+        System.out.println("4. Edit a student.");
+        System.out.println("5. Healthcheck.");
+        System.out.println("6. Exit.");
+        System.out.print("Enter your choice: ");
+        int choiceOfService = sc.nextInt(); //doesn't read the newline
+        sc.nextLine(); //consume the remaining newline
+        switch (choiceOfService) {
+            case 1:
                 addNewStudent();
                 break;
-            case "2":
-                getAllStudents();
+            case 2:
+                System.out.println("By what criteria do you want to retrieve student data?");
+                System.out.println("1. All students.");
+                System.out.println("2. Name.");
+                System.out.println("3. Age.");
+                System.out.println("4. Gender.");
+                System.out.println("5. Phone number.");
+                System.out.println("6. ID.");
+                System.out.println("7. Height.");
+                System.out.println("8. Weight.");
+                System.out.println("9. Exit.");
+                System.out.print("Enter your choice: ");
+                int choiceOfGet = sc.nextInt();
+                sc.nextLine();
+                switch (choiceOfGet) {
+                    case 1:
+                        for (Student student : getAllStudents()) {
+                            System.out.println(student);
+                        }
+                        break;
+                    case 2:
+                        System.out.print("Search by name: ");
+                        for (Student student : getStudentsByName(sc.nextLine())) {
+                            System.out.println(student);
+                        }
+                        break;
+                    case 3:
+                        System.out.print("Search by age: \nFrom: ");
+                        int ageLow = sc.nextInt();
+                        System.out.print("To: ");
+                        int ageHigh = sc.nextInt();
+                        for (Student student : getStudentsByAge(ageLow, ageHigh)) {
+                            System.out.println(student);
+                        }
+                        sc.nextLine();
+                        break;
+                    case 4:
+                        System.out.print("Search by gender: ");
+                        for (Student student : getStudentsByGender(sc.nextLine())) {
+                            System.out.println(student);
+                        }
+                        break;
+                    case 5:
+                        System.out.print("Search by phone number: ");
+                        for (Student student : getStudentsByPhoneNumber(sc.nextLine())) {
+                            System.out.println(student);
+                        }
+                        break;
+                    case 6:
+                        System.out.print("Search by ID: ");
+                        System.out.println(getStudentByID(sc.nextLine()));
+                        break;
+                    case 7:
+                        System.out.print("Search by height: \nFrom: ");
+                        float heightLow = sc.nextFloat();
+                        System.out.print("To: ");
+                        float heightHigh = sc.nextFloat();
+                        for (Student student : getStudentsByHeight(heightLow, heightHigh)) {
+                            System.out.println(student);
+                        }
+                        sc.nextLine();
+                        break;
+                    case 8:
+                        System.out.print("Search by weight: ");
+                        float weightLow = sc.nextFloat();
+                        System.out.print("To: ");
+                        float weightHigh = sc.nextFloat();
+                        for (Student student : getStudentsByWeight(weightLow, weightHigh)) {
+                            System.out.println(student);
+                        }
+                        sc.nextLine();
+                        break;
+                    case 9:
+                        System.out.println("Goodbye.");
+                        System.exit(90);
+                    default:
+                        System.out.println("Something went wrong.");
+                }
                 break;
-            case "3":
-                System.out.print("Enter your ID: ");
-                id = sc.nextLine();
-                getStudentByID(id);
-                break;
-            case "4":
+            case 3:
                 System.out.print("Enter your ID: ");
                 id = sc.nextLine();
                 deleteStudentByID(id);
                 break;
-            case "5":
+            case 4:
                 System.out.print("Enter your ID: ");
                 id = sc.nextLine();
                 editStudentByID(id);
                 break;
-            case "6":
+            case 5:
+                System.out.println("Which healthcheck do you want to do?");
+                System.out.println("1. Get student by height rank.");
+                System.out.println("2. Get student by weight rank.");
+                System.out.println("3. Get BMI by ID.");
+                System.out.println("4. Exit.");
+                System.out.print("Enter your choice: ");
+                int choiceOfHealthcheck = sc.nextInt();
+                sc.nextLine();
+                switch (choiceOfHealthcheck) {
+                    case 1:
+                        System.out.println("Currently the class has " + students.size() + " students.");
+                        System.out.print("Enter height rank: ");
+                        int heightRank = sc.nextInt();
+                        sc.nextLine();
+                        System.out.print(getStudentByHeightRank(heightRank));
+                        break;
+                    case 2:
+                        System.out.println("Currently the class has " + students.size() + " students.");
+                        System.out.print("Enter weight rank: ");
+                        int weightRank = sc.nextInt();
+                        sc.nextLine();
+                        System.out.print(getStudentByWeightRank(weightRank));
+                        break;
+                    case 3:
+                        System.out.println("Enter your ID: ");
+                        id = sc.nextLine();
+                        System.out.println("Your BMI is " + getBMIByID(id));
+                        break;
+                    case 4:
+                        System.out.println("Goodbye.");
+                        System.exit(40);
+                    default:
+                        System.out.println("Something went wrong.");
+                }
+                break;
+            case 6:
                 System.out.println("Goodbye.");
-                System.exit(0);
+                System.exit(60);
             default:
                 System.out.println("Something went wrong.");
         }
         System.out.println("Continue (yes/no)? ");
-        String ans = sc.nextLine();
-        switch (ans) {
+        System.out.print("Enter your choice: ");
+        String choice = sc.nextLine();
+        switch (choice) {
             case "yes":
                 System.out.println("Great! Let's continue!");
                 break;
