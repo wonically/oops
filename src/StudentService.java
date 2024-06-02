@@ -11,9 +11,7 @@ public class StudentService extends InputValidation {
         students = new ArrayList<>();
         demoDtb();
     }
-//tìm theo tên, líst người > 20t, chiều cao t2 trong lớp, thêm phone cho student, in sinh viên có đầu sdt là 09, validate sdt phải 10 số, chiêu cao k qua 200
-    //can nang k qua 100, ten k có số
-    //in ra người có tbc chiều cao cân nặng đứng thứ nhất trong lớp
+
     public void demoDtb() {
         students.add(new Student("Julia", 18, "female", "0999999999", "001", 165.5F, 47.6F));
         students.add(new Student("Benson", 20, "male", "0333333333", "002", 181.6F, 70.4F));
